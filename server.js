@@ -2,10 +2,11 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const Contact = require('./models/Contact');
+const Login = require('./models/Login');
 
 const app = express();
 app.use(bodyParser.json());
-app.use(express.static('public')); // מאפשר לשרת קבצים סטטיים מהתיקיה public
+app.use(express.static('public'));
 
 mongoose.connect('mongodb://localhost:27017/myDatabase', {
     useNewUrlParser: true,
@@ -19,15 +20,17 @@ db.once('open', function() {
     console.log('Connected to MongoDB');
 });
 
-app.post('/contact', async (req, res) => {
-    const { name, email, message } = req.body;
+// נתיב POST ליצירת כניסה חדשה
+app.post('/login', async (req, res) => {
+    const { username } = req.body;
+    const loginDate = new Date();
     try {
-        const newContact = new Contact({ name, email, message });
-        await newContact.save();
-        res.status(201).json({ message: 'Contact message saved successfully' });
+        const newLogin = new Login({ username, loginDate });
+        await newLogin.save();
+        res.status(201).json({ message: 'Login information saved successfully' });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error saving contact message' });
+        res.status(500).json({ message: 'Error saving login information' });
     }
 });
 
